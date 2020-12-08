@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.userservice.entity.User;
 import com.userservice.repositories.UserRepository;
@@ -31,14 +34,15 @@ public class UserResource {
 	}
 	
 	@PostMapping
-	public User addUser(@RequestBody User user) {
+	public ResponseEntity<User> addUser(@RequestBody User user) {
 		System.out.println("Saving the user");
 		System.out.println(user);
-		return userRepository.save(user);
+		User savedUser = userRepository.save(user);
+		return ResponseEntity.ok(savedUser);
 	}
 	
-	@GetMapping("/{userName}/{email}")
-	public User getUser(@PathVariable String userName, @PathVariable String email) {
+	@GetMapping(value = "/{userName}/{email}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<User> getUser(@PathVariable String userName, @PathVariable String email) {
 		System.out.println("User Name : "+userName + " , Email : "+email);
 		User user = userRepository.findByNameAndEmail(userName, email);
 		if(user != null)
@@ -46,7 +50,7 @@ public class UserResource {
 		else
 			System.out.println("No user found.");
 		
-		return user;
+		return ResponseEntity.ok(user);
 	}
 	
 	@GetMapping("/{userId}")

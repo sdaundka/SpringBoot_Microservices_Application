@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,19 +34,21 @@ public class BookResource {
 	}
 	
 	@PostMapping
-	public Book addBook(@RequestBody Book book) {
+	public ResponseEntity<Book> addBook(@RequestBody Book book) {
 		System.out.println("Saving the Book");
 		System.out.println(book);
-		return bookRepository.save(book);
+		Book savedBook = bookRepository.save(book);
+		return ResponseEntity.ok(savedBook);
 	}
 	
 	@GetMapping("/{author}/{bookName}")
-	public Book getBook(@PathVariable String author, @PathVariable String bookName) {
+	public ResponseEntity<Book> getBook(@PathVariable String author, @PathVariable String bookName) {
 		System.out.println("Getting the book details for book : "+bookName+" and author : "+author);
 		Book book = bookRepository.findByNameAndAuthor(bookName, author);
 		if(book == null)
 			System.out.println("Book details not found");
-		return book;
+		ResponseEntity<Book> bookEntity = ResponseEntity.ok(book);
+		return bookEntity;
 	}
 	
 	@GetMapping("/{bookId}")
